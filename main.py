@@ -1,5 +1,5 @@
 __author__ = 'Semykopenko Ihor'
-__version__ = 3
+__version__ = 4
 __status_of_task__ = 'Done'
 
 
@@ -24,41 +24,23 @@ def check_in_the_rules(word: str) -> bool: return bool(list(filter(lambda x: x i
 
 def reverse_word_with_rules(rawWord: str) -> list:
     """function for reversing word with rules"""
-    # "a1bcd" -> "d1cba" - should be
-    # rawWord[::-1] = "dcb1a"
+    result = []
+    length_of_string = len(rawWord)  # length of string
+    zip_symbols = dict(filter(lambda x: x[1] in rules, zip(range(len(rawWord)), list(rawWord))))  # indexing characters
+    cleared_reverse_word = list(filter(lambda x: x in alphabet, rawWord))  # cleared text which found in alphabets
+    list_word_keys = list(zip_symbols.keys())[::-1]  # reversed index's - characters
 
-    raw_result = []
-    last_symbol = None
-    enumerate = 0  # index for rawWord[::-1]
-
-    # iteration of word in reverse mode
-    for letter in rawWord[::-1]:
-        if letter in rules and enumerate == 0:  # exception when first letter exist in rules
-            last_symbol = letter
-
-        if rawWord[enumerate] in rules:  # checking if letter in rawWord exist in rules
-            raw_result.append(rawWord[enumerate])  # adding our exception
-            if letter not in rules:  # checking if letter not in rules
-                raw_result.append(letter)  # adding
-            enumerate += 1
-
-        elif letter in rules:
-            continue
-
-        elif letter in alphabet:
-            raw_result.append(letter)
-            enumerate += 1
-
-    if last_symbol is not None:
-        raw_result.append(last_symbol)
-
-    return raw_result
+    for index in range(length_of_string):
+        if index in list_word_keys:
+            result.append(zip_symbols[index])
+        else:
+            result.append(cleared_reverse_word.pop())
+    return result
 
 
 def reverse_word(rawWord: str) -> str:
     """this function return word in reverse in the selected rules"""
-
-    # if the word have anything number or symbol
+    #  if the word have anything number or symbol
     if check_in_the_rules(word=rawWord):
         return ''.join(reverse_word_with_rules(rawWord=rawWord))
     else:  # if the word doesn't have anything number or symbol
@@ -83,13 +65,18 @@ if __name__ == '__main__':
         ("a1bcd efg!h", "d1cba hgf!e"),
         ("", ""),
 
+        # <-- My additions -->
         ("a1bcd  efg!h", "d1cba  hgf!e"),  # I have two "space" in the text
         ("   ", "   "),
         ("Hello World!", "olleH dlroW!"),
         ("!Hello World", "!olleH dlroW"),
         ("x!x", "x!x"),
+        ("pyth123@on", "noht123@yp")
+
     ]
 
     for text, reversed_text in cases:
         assert text_reverse(text) == reversed_text
         print(text_reverse(text) == reversed_text)
+
+
