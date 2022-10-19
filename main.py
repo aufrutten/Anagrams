@@ -3,38 +3,23 @@ __version__ = 4
 __status_of_task__ = 'Done'
 
 
-def rules_function() -> list:
-    """creator of rules on the foundation the signs and numbers"""
-    numbers = [i for i in '0123456789']
-    sings = [i for i in '§±!@#$%^&*()-=_+[]{}\'"\\:;,./<>?']
-    return numbers + sings
+rules = '0123456789' + '§±!@#$%^&*()-=_+[]{}\'"\\:;,./<>?'
+alphabet = [chr(letter) for letter in range(97, 123)] + [chr(letter) for letter in range(65, 91)]
 
 
-def alphabet_function() -> list:
-    """creator of alphabet in ASCII"""
-    lowercase = [chr(letter) for letter in range(97, 123)]  # letters in lowercase
-    uppercase = [chr(letter) for letter in range(65, 91)]  # letters in uppercase
-    return uppercase + lowercase
+def check_in_the_rules(word: str) -> bool: return any(char for char in word if char in rules)
 
 
-rules = rules_function()
-alphabet = alphabet_function()
-def check_in_the_rules(word: str) -> bool: return bool(list(filter(lambda x: x in rules, word)))
-
-
-def reverse_word_with_rules(rawWord: str) -> list:
+def reverse_word_with_rules(word: str) -> list:
     """function for reversing word with rules"""
     result = []
-    length_of_string = len(rawWord)  # length of string
-    zip_symbols = dict(filter(lambda x: x[1] in rules, zip(range(len(rawWord)), list(rawWord))))  # indexing characters
-    cleared_reverse_word = list(filter(lambda x: x in alphabet, rawWord))  # cleared text which found in alphabets
-    list_word_keys = list(zip_symbols.keys())[::-1]  # reversed index's - characters
-
-    for index in range(length_of_string):
-        if index in list_word_keys:
-            result.append(zip_symbols[index])
+    zip_symbols = {index: char for index, char in enumerate(word) if char in rules}
+    cleared_word = [char for char in word if char in alphabet]  # cleared text which found in alphabets
+    for index, letter in enumerate(word):
+        if index in zip_symbols:
+            result.append(letter)
         else:
-            result.append(cleared_reverse_word.pop())
+            result.append(cleared_word.pop())
     return result
 
 
@@ -42,20 +27,15 @@ def reverse_word(rawWord: str) -> str:
     """this function return word in reverse in the selected rules"""
     #  if the word have anything number or symbol
     if check_in_the_rules(word=rawWord):
-        return ''.join(reverse_word_with_rules(rawWord=rawWord))
+        return ''.join(reverse_word_with_rules(word=rawWord))
     else:  # if the word doesn't have anything number or symbol
         return ''.join(list(rawWord)[::-1])
 
 
-def text_reverse(rawText: str):
+def text_reverse(Text: str):
     """function for reverse text and which leaves symbols and numbers in their place"""
     # getting list of word, with separator " " - space | exp: 'hello world' -> ['hello', 'world']
-    words = rawText.split(' ')
-
-    raw_result = []
-    for word in words:
-        raw_result.append(reverse_word(word))
-    return ' '.join(raw_result)
+    return ' '.join([reverse_word(word) for word in Text.split(' ')])
 
 
 if __name__ == '__main__':
@@ -71,12 +51,11 @@ if __name__ == '__main__':
         ("Hello World!", "olleH dlroW!"),
         ("!Hello World", "!olleH dlroW"),
         ("x!x", "x!x"),
-        ("pyth123@on", "noht123@yp")
+        ("pyth123@on", "noht123@yp"),
+        ("ab123", "ba123")
 
     ]
 
     for text, reversed_text in cases:
         assert text_reverse(text) == reversed_text
-        print(text_reverse(text) == reversed_text)
-
 
